@@ -1,11 +1,20 @@
-DROP table IF EXISTS Tavern, BasementRats, Users, Roles, Locations, Supplies, ReceivedSups, Services, Status, Sales;
-
+DROP TABLE IF EXISTS Sales, ServStatus, Services, ReceivedSups, Supplies, Locations, Roles, Users, BasementRats, Tavern;
+  
 CREATE TABLE Tavern (
     TavernID INT IDENTITY(1,1),
     TavernName varchar(255),
     LocationID int,
     OwnerID int
 );
+
+ALTER TABLE Tavern
+ADD
+    FOREIGN KEY (TavernID) REFERENCES BasementRats(TavernID),
+    FOREIGN KEY (TavernID) REFERENCES Supplies(TavernID),
+    FOREIGN KEY (TavernID) REFERENCES ReceivedSups(TavernID),
+    FOREIGN KEY (TavernID) REFERENCES Services(TavernID),
+    FOREIGN KEY (TavernID) REFERENCES Sales(TavernID)
+
 
 CREATE TABLE Users (
     userID int IDENTITY(1,1),
@@ -19,17 +28,14 @@ CREATE TABLE Roles (
     RoleDescription varchar(MAX)
 );
 
+ALTER TABLE Users ADD FOREIGN KEY (RoleID) REFERENCES RoleID(RoleID)
+
 CREATE TABLE Locations (
     LocationID int IDENTITY(1,1),
     LocName varchar (100),
-    TavernID int NOT NULL
 );
 
-CREATE TABLE BasementRats (
-    RatID int IDENTITY(1,1),
-    RatName varchar(100),
-    TavernID INT not null,
-);
+ALTER TABLE Tavern ADD FOREIGN KEY (LocationID) REFERENCES Locations(LocationID)
 
 CREATE TABLE Supplies (
     SupplyID int IDENTITY(1,1),
@@ -102,14 +108,6 @@ VALUES
     (TavernID, LocationID,"Cherry Hill"),
     (TavernID, LocationID,"Blackwood"),
     (TavernID, LocationID,'Trenton');
-
-INSERT INTO BasementRats (RatID, TavernID, RatName)
-VALUES
-    (RatID, TavernID, "Ratty" ),
-    (RatID, TavernID, "Johnny"),
-    (RatID, TavernID, "Jeff"),
-    (RatID, TavernID, "Dirty"),
-    (RatID, TavernID, 'Jerry');
 
 INSERT INTO Supplies (SupplyID, TavernID, UpdatedDate, SupName, Unit, Cost,
  quantity)
