@@ -1,4 +1,7 @@
+CREATE DATABASE Tavernssssss;
+
 DROP TABLE IF EXISTS Sales, ServStatus, Services, ReceivedSups, Supplies, Locations, Roles, Users, BasementRats, Tavern;
+
   
 CREATE TABLE Tavern (
     TavernID INT IDENTITY(1,1),
@@ -76,6 +79,36 @@ CREATE TABLE SALES (
     DatePurchased DATE,
     AmountPurchased int
 );
+
+CREATE TABLE Guests (
+    GuestID int PRIMARY KEY IDENTITY(1,1),
+    GuestName varchar(20),
+    Notes varchar(MAX),
+    GuestStatus int not null,
+)
+
+ALTER TABLE Guests ADD FOREIGN KEY (GuestStatus) REFERENCES GuestStatus(StatusID)
+
+CREATE TABLE GuestClass (
+    GuestID int,
+    GuestStatus int,
+    GuestLvl int
+)
+
+ALTER TABLE GuestClass
+ADD
+    FOREIGN KEY (GuestID) REFERENCES Guests(GuestID),
+    FOREIGN KEY (GuestStatus) REFERENCES GuestStatus(StatusID)
+
+
+CREATE TABLE GuestStatus (
+    StatusID int PRIMARY Key IDENTITY(1,1),
+    StatusName varchar(255)
+)
+
+
+
+
 
 
 INSERT INTO Tavern (TavernName, TavernID)
