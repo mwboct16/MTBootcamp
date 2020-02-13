@@ -1,8 +1,9 @@
-DROP TABLE IF EXISTS  ServiceSupplies ,GuestClass, Guests, GuestStatus,Sales, ServStatus, Services, ReceivedSups, Supplies, Roles, Users, Tavern, Locations;
 
+DROP TABLE IF EXISTS   Locations, Tavern,ServiceSupplies, RoomStays, Rooms, GuestClass, Guests, GuestStatus, Sales, ServStatus, Services, ReceivedSups, Supplies, Roles, Users;
+ 
   
 CREATE TABLE Tavern (
-    TavernID INT IDENTITY(1,1),
+    TavernID INT PRIMARY KEY IDENTITY(1,1),
     TavernName varchar(255),
     LocationID int,
     OwnerID int
@@ -22,7 +23,6 @@ CREATE TABLE Roles (
 );
 
 
-
 CREATE TABLE Locations (
     LocationID int PRIMARY KEY IDENTITY(1,1),
     LocName varchar (100),
@@ -31,7 +31,7 @@ CREATE TABLE Locations (
 
 CREATE TABLE Supplies (
     SupplyID int PRIMARY KEY IDENTITY(1,1),
-    TavernID int not null,
+    TavernID int ,
     SupName VARCHAR(255),
     Unit varchar(3),
     Cost DECIMAL(5,2), 
@@ -40,8 +40,8 @@ CREATE TABLE Supplies (
 );
 
 CREATE TABLE ReceivedSups (
-    SupplyID int not null,  
-    TavernID int not null,
+    SupplyID int ,  
+    TavernID int ,
     Cost DECIMAL(5,2),
     AmntRcvd int,
     DateRcvd DATE
@@ -51,30 +51,31 @@ CREATE TABLE Services (
     ServiceID int IDENTITY(1,1),
     ServName VARCHAR(255),
     StatusID int,
-    TavernID int not null,
+    TavernID int ,
 );
 
 CREATE TABLE ServStatus (
     StatusID int IDENTITY(1,1),
-    ServName VARCHAR not null,
+    ServName VARCHAR ,
     StatusName varchar(255)
 );
 
-CREATE TABLE SALES (
-    ServiceID int not null,
-    TavernID int not null,
+CREATE TABLE Sales (
+    ServiceID int ,
+    TavernID int ,
     Guest VARCHAR(255),
     Price DECIMAL(5,2),
     DatePurchased DATE,
     AmountPurchased int,
-	SupplyID int not null
+	SupplyID int 
 );
 
 CREATE TABLE Guests (
     GuestID int PRIMARY KEY IDENTITY(1,1),
     GuestName varchar(20),
     Notes varchar(MAX),
-    GuestStatus int not null,
+    GuestStatus int,
+	Birthdate int
 );
 
 CREATE TABLE GuestClass (
@@ -89,10 +90,35 @@ CREATE TABLE GuestStatus (
 );
 
 CREATE TABLE ServiceSupplies (
-	TavernID int not null,
-	SupplyID int not null,
+	TavernID int,
+	SupplyID int,
 	totalSuppliesSales DECIMAL(5,2)
 );
+
+CREATE TABLE Rooms (
+	RoomID int PRIMARY KEY IDENTITY(1,1),
+	RoomName varchar(255),
+	RoomStatus varchar(8),
+	TavernID int 
+);
+
+
+
+CREATE TABLE RoomStays (
+	RoomID int,
+	RoomName varchar(255),
+	GuestID int,
+	Sale int,
+	RatePerDay int,
+	timeUsed DATETIME
+);
+
+ALTER TABLE Rooms ADD FOREIGN KEY (TavernID) References Tavern(TavernID)
+
+ALTER TABLE RoomStays 
+ADD 
+	FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID),
+	FOREIGN KEY (GuestID) REFERENCES Guests(GuestID)
 
 
 ALTER TABLE GuestClass
@@ -176,15 +202,59 @@ VALUES
     ('Active'),
     ('Active');
 
-
+INSERT INTO RoomStays (RoomName, RatePerDay)
+VALUES
+	('Wyatt', 200),
+	('Romance', 7000),
+	('Grande', 40000),
+	('Cheap', 15);
 
 
 INSERT INTO Sales (AmountPurchased, Guest, Price)
 VALUES
-    (6, 'Drake', 299999),
-    (17, 'Nicki', 7999),
+    (6, 'Drake', 299),
+    (17, 'Nicki', 799),
     (2, 'Lil Wayne', 40),
     (40, 'Michael', 29),
+	(37, 'Rel', 843),
+	(66, 'Barry', 209),
+	(42, 'Mike', 290),
+	(41, 'Gerry', 297),
+	(88, 'Jake', 234),
+	(76, 'Tom', 194),
+	(99, 'Bret', 1),
     (8, 'Harry', 899);
+  
+INSERT INTO Guests (GuestName, Birthdate)
+VALUES
+	('Mike', 1999),
+	('Tom', 2009),
+	('Jake', 1976),
+	('Gerry', 2020);
 
-    
+-- Birthdays before 2000
+SELECT * FROM  Guests
+EXCEPT
+SELECT * FROM Guests
+WHERE Birthdate > 2000
+
+-- Rates of rooms over 100 Gold
+SELECT * FROM RoomStays
+EXCEPT
+SELECT * FROM RoomStays
+WHERE RatePerDay < 100 
+
+
+-- Unique guest name?
+SELECT 'Mike' FROM Guests
+
+-- Ordered by name in ascneding order
+SELECT GuestName FROM Guests ORDER BY GuestName ASC;
+
+-- Top 10 Highest price sales
+SELECT TOP 10
+	Guest, 
+	Price 
+FROM 
+	Sales 
+ORDER BY Price DESC;
